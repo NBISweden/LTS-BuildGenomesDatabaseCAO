@@ -16,7 +16,7 @@ OUTFILE1=$3
 while read p
 do
     # Grep line from assembly summary file
-    grep -E "$p" $INFILE2 | grep "representative genome" >> $OUTFILE1
+    grep -E "   $p  " $INFILE2 | grep "representative genome" >> $OUTFILE1
 done < $INFILE1
 
 
