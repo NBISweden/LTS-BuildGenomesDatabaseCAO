@@ -7,24 +7,28 @@ min_version("6.9.1")
 # a multi-species fasta file and a table linking
 # the taxon ids, genbank accession number and 
 # species for all the sequences in the fasta file.
+# Note that sequences less than 2000bp are excluded.
 
 # Note that the resource usage for building indexes
-# should be adjusted depending on the fasta file size
+# should be adjusted in the cluster.yml file 
+# depending on the fasta file size
+
 
 # Run as:
-# snakemake -c 1 -s Snakefile_make_assm_db --use-singularity
+# snakemake -c 1 -s Snakefile_make_assm_db_all_verts --use-conda
 #
 
 # Make rulegraph with:
-# snakemake -c 1 -s Snakefile_make_assm_db --dag | dot -Tsvg > DAG_make_assm_db.svg
+# snakemake -c 1 -s Snakefile_make_assm_db_all_verts --dag | dot -Tsvg > DAG_make_assm_db.svg
 
 # List of species to download (one per line)
-SPECIES ="target_species_with_related_n65.txt"		
+SPECIES ="all_verts_list_whuman.txt"		
 
 rule all:
 	input:
-		"target_species.1.bt2l",
+		"all_verts_whuman.1.bt2l",
 		"taxon_table.csv",
+		"to_include.bed",
 		"clean_done.txt"
 
 # Download genbank assembly summary table
@@ -44,10 +48,10 @@ rule target_species:
 		SPECIES,
 		"gbk_summary/assembly_summary_genbank.txt"
 	output:
-		"assembly_summary_target_species.txt"
+		"assembly_summary_all_verts_whuman.txt"
 	shell:
 		"""
-		bash make_summary_table.sh {input[0]} {input[1]} {output[0]}
+		bash scripts/make_summary_table.sh {input[0]} {input[1]} {output[0]}
 		"""
 
 # Make a script with paths to download genomes
@@ -55,7 +59,7 @@ rule target_species:
 # exists.
 rule make_ftp_script:
 	input:
-		"assembly_summary_target_species.txt",
+		"assembly_summary_all_verts_whuman.txt",
 	output:
 		temp("ftp_paths.txt"),
 		"run_ftp_downloads.sh"
@@ -84,7 +88,7 @@ rule cat_genomes:
 	input:
 		"download_log.txt"
 	output:
-		"target_species.fasta"
+		temp("all_contigs.fasta")
 	params:
 		temp_out = "temp.fasta.gz"
 	shell:
@@ -94,9 +98,23 @@ rule cat_genomes:
 		mv temp.fasta {output[0]}
 		"""
 
+# Remove contigs less than 2000bp
+rule filt_short:
+	input:
+		"all_contigs.fasta"
+	output:
+		"all_verts_whuman.fasta"
+	conda:
+		"envs/seqkit.yml"
+	shell:
+		"""
+		seqkit seq -m2000 {input[0]} -o {output[0]}
+		"""
+
+
 rule get_headers:
 	input:
-		"target_species.fasta"
+		"all_verts_whuman.fasta"
 	output:
 		"seq_ids.txt"
 	shell:
@@ -104,21 +122,22 @@ rule get_headers:
 		grep '>' {input[0]} | sed 's/>//' >> {output[0]}
 		"""
 
-# Note - Use fat node and all cores
+# Note - Use fat node and all cores on Snowy
 rule bowtie_idx:
 	input:
-		"target_species.fasta"
+		"all_verts_whuman.fasta"
 	output:
-		"target_species.1.bt2l",
-		"target_species.2.bt2l",
-		"target_species.3.bt2l",
-		"target_species.4.bt2l",
-		"target_species.rev.1.bt2l",
-		"target_species.rev.2.bt2l"
+		"all_verts_whuman.1.bt2l",
+		"all_verts_whuman.2.bt2l",
+		"all_verts_whuman.3.bt2l",
+		"all_verts_whuman.4.bt2l",
+		"all_verts_whuman.rev.1.bt2l",
+		"all_verts_whuman.rev.2.bt2l"
 	params:
-		idx_base = "target_species"
+		idx_base = "all_verts_whuman"
 	threads: 16
-	container: "https://depot.galaxyproject.org/singularity/bowtie2:2.4.5--py39hd2f7db1_3"
+	conda:
+		"envs/bowtie2.yml"
 	shell:
 		"""
 		bowtie2-build --large-index --threads {threads} {input[0]} {params.idx_base}
@@ -127,15 +146,32 @@ rule bowtie_idx:
 # Make a table with contig,species,taxid
 rule make_taxon_table:
 	input:
-		"assembly_summary_target_species.txt",
+		"assembly_summary_all_verts_whuman.txt",
 		"seq_ids.txt"
 	output:
 		"taxon_table.csv"
+	conda:
+		"envs/python.yml"
 	shell:
 		"""
-		module load python/3.7.2
-		python make_id_table_with_taxid.py {input[0]} {input[1]} {output[0]}
+		python scripts/make_id_table_with_taxid_v2.py {input[0]} {input[1]} {output[0]}
 		"""
+
+# Make bedfile that excludes Homo sapiens and
+# Clupea harengus contigs
+
+rule make_bedfile:
+	input:
+		"all_verts_whuman.fasta"
+	output:
+		"to_include.bed"
+	conda:
+		"envs/python.yml"
+	shell:
+		"""
+		python scripts/make_bedfile_no_clupea_human.py {input[0]} {output[0]}
+		"""
+
 
 # Cleanup fastas
 rule clean:

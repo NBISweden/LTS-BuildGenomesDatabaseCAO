@@ -1,3 +1,4 @@
+
 #! /bin/bash/
 
 # This bash script makes an assembly summary table
@@ -16,7 +17,7 @@ OUTFILE1=$3
 while read p
 do
     # Grep line from assembly summary file
-    grep -E "   $p  " $INFILE2 | grep "representative genome" >> $OUTFILE1
+    grep -E "	$p	" $INFILE2 | grep "representative genome" >> $OUTFILE1
 done < $INFILE1
 
 
@@ -26,3 +27,5 @@ do
     # Grep line from assembly summary file
     grep -E "$p" $INFILE2 | grep "reference genome" >> $OUTFILE1
 done < $INFILE1
+
+
