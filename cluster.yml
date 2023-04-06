@@ -1,0 +1,50 @@
+__default__:
+ account: snic2022-22-722
+ time: "5-00:00:00"
+ n: 1
+ partition: "core"
+ extra: ""
+genbank_table:
+ time: "2:00:00"
+ partition: "core"
+ n: 1
+target_species:
+ time: "1:00:00"
+ partition: "core"
+ n: 1
+make_ftp_script:
+ time: "30:00"
+ partition: "core"
+ n: 1
+download_genomes:
+ time: "8:00:00"
+ partition: "core"
+ n: 1
+filt_short:
+ time: "30:00"
+ partition: "core"
+ n: 1
+cat_genomes:
+ time: "30:00"
+ partition: "core"
+ n: 1
+get_headers:
+ time: "30:00"
+ partition: "core"
+ n: 1
+bowtie_idx:
+ time: "10-00:00:00"
+ partition: "node -C mem512GB"
+ n: 1
+make_taxon_table:
+ time: "2:00:00"
+ partition: "core"
+ n: 1
+make_bedfile:
+ time: "4:00:00"
+ partition: "core"
+ n: 1
+clean:
+ time: "2:00:00"
+ partition: "core"
+ n: "1"
