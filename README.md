@@ -40,4 +40,4 @@ KB228880.1	0	9835568
 
 ## Other
 - Contigs less than 2000 base pairs are excluded from the database
-- The **taxon_table.csv** and **to_include.bed** are needed for the main pipeline (https://github.com/NBISweden/LTS-BiodiversityAnalysisCAO) 
+- The **taxon_table.csv** and **to_include.bed** files are needed for the main pipeline (https://github.com/NBISweden/LTS-BiodiversityAnalysisCAO) 
