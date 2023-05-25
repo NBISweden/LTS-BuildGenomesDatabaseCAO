@@ -29,7 +29,7 @@ JAOSYZ010000001.1,Gadus macrocephalus,80720
 CAMRHF010002158.1,Pusa hispida,9718
 ```
 
-The pipeline also outputs a bed formatted file that can be used downstream for filtering alignments from sam/bam files. In this case, human and herring assembly contigs are included in the database so that reads originating from these species do not map elsewhere. But, downstream, alignments to human and herring are filtered out using the bed file.
+The pipeline also outputs a bed formatted file that can be used downstream for filtering alignments from sam/bam files. The bed file includes all of the contigs that are of interest for futher analysis. In this case, human and herring assembly contigs are included in the database so that reads originating from these species do not map elsewhere. But, human and herring contigs are excluded from the bed file (and downstream analysis) because they are not of interest.
 
 The **to_include.bed** file looks like this:
 ```
