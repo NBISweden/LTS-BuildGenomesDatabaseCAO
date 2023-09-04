@@ -47,4 +47,8 @@ make_bedfile:
 clean:
  time: "2:00:00"
  partition: "core"
- n: "1"
+ n: 1
+convert:
+ time: "30:00"
+ partition: "core"
+ n: 1
