@@ -11,7 +11,9 @@ min_version("6.9.1")
 
 # Note that the resource usage for building indexes
 # should be adjusted in the cluster.yml file 
-# depending on the fasta file size
+# depending on the fasta file size. The script
+# has been updated so that species ids are converted
+# to species level taxids before searching for assemblies.
 
 
 # Run as:
@@ -22,7 +24,7 @@ min_version("6.9.1")
 # snakemake -c 1 -s Snakefile_make_assm_db_all_verts --dag | dot -Tsvg > DAG_make_assm_db.svg
 
 # List of species to download (one per line)
-SPECIES ="all_verts_list_whuman.txt"		
+SPECIES ="all_verts_list_whuman_v2.txt"		
 
 rule all:
 	input:
@@ -40,12 +42,24 @@ rule genbank_table:
 		wget https://ftp.ncbi.nlm.nih.gov/genomes/genbank/assembly_summary_genbank.txt
 		mv assembly_summary_genbank.txt {output[0]}
 		"""
+# Convert species names to taxids
+rule convert:
+	input:
+		SPECIES,
+	output:
+		"input_species_taxids.txt"
+	conda:
+		"envs/ete3.yml"
+	shell:
+		"""
+		python scripts/convert_names2taxids.py {input[0]} {output[0]}
+		"""	
 
 # Make a summary table for target
 # genomes
 rule target_species:
 	input:
-		SPECIES,
+		"input_species_taxids.txt",
 		"gbk_summary/assembly_summary_genbank.txt"
 	output:
 		"assembly_summary_all_verts_whuman.txt"
