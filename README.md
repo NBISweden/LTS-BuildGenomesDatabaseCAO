@@ -24,9 +24,9 @@ The pipeline outputs a table with taxon and species information for each sequenc
 
 The **taxon_table.csv** file looks like this: 
 ```
-KI270707.1,Homo sapiens,9606
-JAOSYZ010000001.1,Gadus macrocephalus,80720
-CAMRHF010002158.1,Pusa hispida,9718
+KI270707.1,Homo sapiens,9606,9604
+JAOSYZ010000001.1,Gadus macrocephalus,80720,8045
+CAMRHF010002182.1,Pusa hispida,9718,9709
 ```
 
 The pipeline also outputs a bed formatted file that can be used downstream for filtering alignments from sam/bam files. The bed file includes all of the contigs that are of interest for futher analysis. In this case, human and herring assembly contigs are included in the database so that reads originating from these species do not map elsewhere. But, human and herring contigs are excluded from the bed file (and downstream analysis) because they are not of interest.
