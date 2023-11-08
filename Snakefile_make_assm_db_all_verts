@@ -24,7 +24,7 @@ min_version("6.9.1")
 # snakemake -c 1 -s Snakefile_make_assm_db_all_verts --dag | dot -Tsvg > DAG_make_assm_db.svg
 
 # List of species to download (one per line)
-SPECIES ="all_verts_list_whuman_v2.txt"		
+SPECIES ="all_verts_list_whuman_v4.txt"		
 
 rule all:
 	input:
@@ -112,7 +112,7 @@ rule cat_genomes:
 		mv temp.fasta {output[0]}
 		"""
 
-# Remove contigs less than 2000bp
+# Remove contigs less than 5000bp
 rule filt_short:
 	input:
 		"all_contigs.fasta"
@@ -122,7 +122,7 @@ rule filt_short:
 		"envs/seqkit.yml"
 	shell:
 		"""
-		seqkit seq -m2000 {input[0]} -o {output[0]}
+		seqkit seq -m5000 {input[0]} -o {output[0]}
 		"""
 
 
@@ -165,10 +165,10 @@ rule make_taxon_table:
 	output:
 		"taxon_table.csv"
 	conda:
-		"envs/python.yml"
+		"envs/ete3.yml"
 	shell:
 		"""
-		python scripts/make_id_table_with_taxid_v2.py {input[0]} {input[1]} {output[0]}
+		python scripts/make_id_table_with_taxid_v3.py {input[0]} {input[1]} {output[0]}
 		"""
 
 # Make bedfile that excludes Homo sapiens and
