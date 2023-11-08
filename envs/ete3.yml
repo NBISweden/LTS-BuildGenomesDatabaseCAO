@@ -1,0 +1,8 @@
+name: ete3
+channels:
+ - defaults
+ - conda-forge
+ - bioconda 
+ - etetoolkit
+dependencies:
+ - ete3
