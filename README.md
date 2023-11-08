@@ -20,7 +20,7 @@ CAMRHF010002182.1 Pusa hispida saimensis genome assembly, contig: 2181, whole ge
 CM000663.2 Homo sapiens chromosome 1, GRCh38 reference primary assembly
 ```
 
-The pipeline outputs a table with taxon and species information for each sequence in the database. This file contains the contig id, species and taxon id for each sequence in the database. This file can be used in downstream processes for filtering based on species or taxon id. It is needed
+The pipeline outputs a table with taxon and species information for each sequence in the database. This file contains the contig id, species name, species taxon id and family taxon id for each sequence in the database. This file can be used for filtering in downstream processes.
 
 The **taxon_table.csv** file looks like this: 
 ```
